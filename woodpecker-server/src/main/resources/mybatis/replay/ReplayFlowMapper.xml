@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kele.woodpecker.project.replay.mapper.ReplayFlowMapper">
+
+    <resultMap type="replayFlow" id="replayFlowResult">
+        <id property="id" column="id"/>
+        <result property="gorId" column="gor_id"/>
+        <result property="reqUrl" column="req_url"/>
+        <result property="reqPath" column="req_path"/>
+        <result property="reqMethod" column="req_method"/>
+        <result property="reqCookies" column="req_cookies"/>
+        <result property="reqContentType" column="req_content_type"/>
+        <result property="reqParam" column="req_param"/>
+        <result property="respStatusCode" column="resp_status_code"/>
+        <result property="respData" column="resp_data"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+
+    </resultMap>
+
+    <insert id="insertReplayFlow" parameterType="replayFlow">
+        insert into replay_flow (gor_id, req_url, req_path, req_method, req_content_type, req_cookies, req_param,
+                                 version,create_time)
+        values (#{gorId}, #{reqUrl}, #{reqPath}, #{reqMethod}, #{reqContentType}, #{reqCookies}, #{reqParam},
+                #{version},#{createTime})
+    </insert>
+
+    <update id="updateReplayFlow" parameterType="replayFlow">
+        update replay_flow
+        <set>
+            <if test="respStatusCode != null">resp_status_code = #{respStatusCode},</if>
+            <if test="respData != null">resp_data = #{respData}</if>
+        </set>
+        where gor_id = #{gorId} and version=#{version}
+    </update>
+
+
+    <sql id="selectReplayFlow">
+        select id,
+               gor_id,
+               req_url,
+               req_path,
+               req_method,
+               req_content_type,
+               req_cookies,
+               req_param,
+               resp_status_code,
+               resp_data,
+               create_time,
+               update_time,version
+        from replay_flow
+    </sql>
+
+    <select id="selectFlowByVersion" resultMap="replayFlowResult">
+        <include refid="selectReplayFlow"/>
+        where version=#{version}
+    </select>
+
+    <select id="selectVersionList" resultType="String">
+        select DISTINCT(version) from replay_flow  order by id desc limit 10;
+    </select>
+
+    <select id="selectFlowList" parameterType="replayQueryDto" resultMap="replayFlowResult">
+        <include refid="selectReplayFlow"/>
+        <where>
+            <if test="gorId != null and gorId != ''">
+                AND gor_id = #{gorId}
+            </if>
+            <if test="version != null and version != ''">
+                AND version = #{version}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectFlowByGorId" resultMap="replayFlowResult">
+        <include refid="selectReplayFlow"/>
+        where gor_id = #{gorId} and version=#{version}
+    </select>
+
+    <select id="selectReplayById" resultMap="replayFlowResult">
+        <include refid="selectReplayFlow"/>
+        where id = #{id}
+    </select>
+
+    <delete id="deleteReplayById" parameterType="String">
+        delete from replay_flow where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectReqAndResList" resultMap="replayFlowResult">
+        <include refid="selectReplayFlow"/>
+        where create_time>=#{createTime}
+        and #{endTime} >=create_time
+    </select>
+
+    <update id="updateVersion">
+        update replay_flow
+        <set>
+            <if test="version != null">version = #{version},</if>
+        </set>
+        where id in
+        <foreach item="ids" collection="array" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </update>
+</mapper>
