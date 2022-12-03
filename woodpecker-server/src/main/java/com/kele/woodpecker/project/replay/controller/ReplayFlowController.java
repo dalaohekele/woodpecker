@@ -32,7 +32,6 @@ public class ReplayFlowController extends BaseController {
      * 获取所有版本号 Limit10
      * @return
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:list')")
     @GetMapping("/version")
     public AjaxResult version( )
     {
@@ -46,7 +45,6 @@ public class ReplayFlowController extends BaseController {
      * @param queryDto
      * @return
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:list')")
     @GetMapping("/list")
     public TableDataInfo list(ReplayQueryDto queryDto)
     {
@@ -60,7 +58,6 @@ public class ReplayFlowController extends BaseController {
      * @param id
      * @return
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:list')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") String id)
     {
@@ -72,14 +69,12 @@ public class ReplayFlowController extends BaseController {
      * @param ids
      * @return
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:list')")
     @DeleteMapping(value = "/delReplay/{ids}")
     public AjaxResult delReplay(@PathVariable String[] ids)
     {
         return toAjax(reqAndResService.delReplayById(ids));
     }
 
-    @PreAuthorize("@ss.hasPermi('system:config:list')")
     @PostMapping("/flow")
     public AjaxResult flow(@RequestBody ReplayDto replayDto)
     {
@@ -87,7 +82,12 @@ public class ReplayFlowController extends BaseController {
         return AjaxResult.success("回放数据中,请稍等");
     }
 
-    @PreAuthorize("@ss.hasPermi('system:config:list')")
+
+    /**
+     * 通过日期区间对流量进行打标签
+     * @param addVersionDto
+     * @return
+     */
     @PostMapping("/addVersion")
     public AjaxResult addVersion(@RequestBody AddVersionDto addVersionDto)
     {
@@ -98,7 +98,7 @@ public class ReplayFlowController extends BaseController {
         return AjaxResult.error("版本添加失败");
     }
 
-    @PreAuthorize("@ss.hasPermi('system:config:list')")
+
     @PostMapping("/copyVersion")
     public AjaxResult copyVersion(@RequestBody ReplayDto replayDto)
     {

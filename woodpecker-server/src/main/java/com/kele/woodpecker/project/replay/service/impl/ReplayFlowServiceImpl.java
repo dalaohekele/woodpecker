@@ -81,16 +81,7 @@ public class ReplayFlowServiceImpl implements IReplayFlowService {
 
     @Override
     public int addVersion(AddVersionDto addVersionDto) {
-        String createDate = addVersionDto.getBeginTime();
-        String endDate = addVersionDto.getEndTime();
-        String version = addVersionDto.getVersion();
-        // 将时间范围内的数据添加版本号
-        List<ReplayFlow> reqAndResList = replayFlowMapper.selectReqAndResList(createDate, endDate);
-        List<Long> listId = new ArrayList<>();
-        for (ReplayFlow reqAndRes : reqAndResList) {
-            listId.add(reqAndRes.getId());
-        }
-        return replayFlowMapper.updateVersion(listId, version);
+        return replayFlowMapper.updateVersion(addVersionDto);
     }
 
     @Async

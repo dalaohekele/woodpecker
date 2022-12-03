@@ -1,5 +1,6 @@
 package com.kele.woodpecker.project.replay.domain.dto;
 
+import com.kele.woodpecker.framework.web.domain.BaseEntity;
 import lombok.Data;
 
 /**
@@ -8,8 +9,6 @@ import lombok.Data;
  * 添加版本号入参
  */
 @Data
-public class AddVersionDto {
-    private String beginTime;
-    private String endTime;
+public class AddVersionDto extends BaseEntity {
     private String version;
 }

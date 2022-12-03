@@ -22,9 +22,9 @@
 
     <insert id="insertReplayFlow" parameterType="replayFlow">
         insert into replay_flow (gor_id, req_url, req_path, req_method, req_content_type, req_cookies, req_param,
-                                 version,create_time)
+                                 version, create_time)
         values (#{gorId}, #{reqUrl}, #{reqPath}, #{reqMethod}, #{reqContentType}, #{reqCookies}, #{reqParam},
-                #{version},#{createTime})
+                #{version}, #{createTime})
     </insert>
 
     <update id="updateReplayFlow" parameterType="replayFlow">
@@ -49,7 +49,8 @@
                resp_status_code,
                resp_data,
                create_time,
-               update_time,version
+               update_time,
+               version
         from replay_flow
     </sql>
 
@@ -59,7 +60,9 @@
     </select>
 
     <select id="selectVersionList" resultType="String">
-        select DISTINCT(version) from replay_flow  order by id desc limit 10;
+        select DISTINCT(version)
+        from replay_flow
+        order by id desc limit 10;
     </select>
 
     <select id="selectFlowList" parameterType="replayQueryDto" resultMap="replayFlowResult">
@@ -103,9 +106,13 @@
         <set>
             <if test="version != null">version = #{version},</if>
         </set>
-        where id in
-        <foreach item="ids" collection="array" open="(" separator="," close=")">
-            #{ids}
-        </foreach>
+        <where>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
     </update>
 </mapper>

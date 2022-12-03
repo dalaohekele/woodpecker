@@ -1,6 +1,7 @@
 package com.kele.woodpecker.project.replay.mapper;
 
 import com.kele.woodpecker.project.replay.domain.ReplayFlow;
+import com.kele.woodpecker.project.replay.domain.dto.AddVersionDto;
 import com.kele.woodpecker.project.replay.domain.dto.ReplayQueryDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,5 +30,5 @@ public interface ReplayFlowMapper {
 
     List<ReplayFlow> selectReqAndResList(@Param("createTime") String createTime, @Param("endTime") String endTime);
 
-    int updateVersion(@Param("ids") List<Long> ids, @Param("version") String version);
+    int updateVersion(AddVersionDto addVersionDto);
 }
