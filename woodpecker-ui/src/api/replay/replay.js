@@ -28,5 +28,12 @@ export function getReplay(id) {
       method: 'delete'
     })
   }
-
+// 流量打标
+export function addVersion(data){
+  return request({
+    url:'/replay/gor/addVersion',
+    method:'post',
+    data: data
+  })
+}
   
