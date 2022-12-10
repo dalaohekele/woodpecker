@@ -16,6 +16,12 @@ public class ReplayDiff {
     // 数据自增id
     private Long id;
 
+    // 对比的基准版本
+    private String basicVersion;
+
+    // 对比版本
+    private String testVersion;
+
     // diff结果
     private String diffResult;
 

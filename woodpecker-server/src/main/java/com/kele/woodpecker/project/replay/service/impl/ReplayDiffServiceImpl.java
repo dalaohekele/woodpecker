@@ -1,6 +1,7 @@
 package com.kele.woodpecker.project.replay.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.ke.diff.Diff;
 import com.ke.diff.model.Result;
 import com.kele.woodpecker.project.replay.domain.ReplayDiff;
@@ -62,18 +63,28 @@ public class ReplayDiffServiceImpl implements IReplayDiffService {
         List<Object> list = new ArrayList<>();
         Diff diff = new Diff();
         for (String id : inList) {
-            ReplayFlow basicReplayFlow = replayFlowService.getFlowDes(id, diffDto.getNewVersion());
-            ReplayFlow testReplayFlow = replayFlowService.getFlowDes(id, diffDto.getOldVersion());
+            JSONObject basicReplayFlow = JSONObject.parseObject(JSON.toJSONString(replayFlowService.getFlowDes(id, diffDto.getNewVersion())));
+            JSONObject testReplayFlow = JSONObject.parseObject(JSON.toJSONString(replayFlowService.getFlowDes(id, diffDto.getOldVersion())));
             List<Result> results = null;
-            if (diffDto.getNoiseList() != null) {
-                results = diff.withNoisePahList(diffDto.getNoiseList()).diff(JSON.toJSONString(basicReplayFlow), JSON.toJSONString(testReplayFlow));
-            } else {
-                results = diff.diff(JSON.toJSONString(basicReplayFlow), JSON.toJSONString(testReplayFlow));
+            // gor 录制流量 返回值可能为空，这里需要判空
+            if (basicReplayFlow.get("respData") != null && testReplayFlow.get("respData") != null) {
+                if (diffDto.getNoiseList() != null) {
+                    results = diff.withNoisePahList(diffDto.getNoiseList()).diff(basicReplayFlow.getString("respData"),
+                            testReplayFlow.get("respData").toString());
+                } else {
+                    results = diff.diff(basicReplayFlow.getString("respData"),
+                            testReplayFlow.get("respData").toString());
+                }
             }
             HashMap<String, List<Result>> hashMap = new HashMap<>();
-            hashMap.put(id, results);
-            list.add(hashMap);
+            // 存在不同则写入结果
+            if (results!=null && !results.isEmpty()) {
+                hashMap.put(id, results);
+                list.add(hashMap);
+            }
         }
+        replayDiff.setTestVersion(diffDto.getNewVersion());
+        replayDiff.setBasicVersion(diffDto.getOldVersion());
         replayDiff.setDiffResult(JSON.toJSONString(list));
         replayDiff.setCreateTime(new Date());
         replayDiff.setUpdateTime(new Date());

@@ -5,13 +5,16 @@
 <mapper namespace="com.kele.woodpecker.project.replay.mapper.ReplayDiffMapper">
     <resultMap type="replayDiff" id="replayDiffResult">
         <id property="id" column="id"/>
+        <result property="basicVersion" column="basic_version"/>
+        <result property="testVersion" column="test_version"/>
+        <result property="diffResult" column="diff_result"/>
         <result property="diffResult" column="diff_result"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <insert id="insertReplayDiff" parameterType="replayDiff">
-        insert into replay_diff (diff_result, create_time, update_time)
-        values (#{diffResult}, #{createTime}, #{updateTime})
+        insert into replay_diff (basic_version,test_version,diff_result, create_time, update_time)
+        values (#{basicVersion},#{testVersion},#{diffResult}, #{createTime}, #{updateTime})
     </insert>
 </mapper>
