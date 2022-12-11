@@ -2,6 +2,7 @@ package com.kele.woodpecker.project.replay.domain.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -11,13 +12,12 @@ import java.util.List;
  */
 @Data
 public class ReplayDiffDto {
-    @NotNull(message = "新版本号不能为空")
-    String newVersion;
+    @NotBlank(message = "基准版本号不能为空")
+    String basicVersion;
 
-    @NotNull(message = "老版本号不能为空")
-    String oldVersion;
+    @NotBlank(message = "测试版本号不能为空")
+    String testVersion;
 
     // 过滤降噪字段
     List<String> noiseList;
-
 }

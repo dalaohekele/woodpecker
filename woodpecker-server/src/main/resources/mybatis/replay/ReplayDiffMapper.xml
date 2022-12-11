@@ -8,13 +8,26 @@
         <result property="basicVersion" column="basic_version"/>
         <result property="testVersion" column="test_version"/>
         <result property="diffResult" column="diff_result"/>
-        <result property="diffResult" column="diff_result"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
+    <sql id="selectReplayDiff">
+        select basic_version, test_version, diff_result, create_time, update_time
+        from replay_diff
+    </sql>
     <insert id="insertReplayDiff" parameterType="replayDiff">
-        insert into replay_diff (basic_version,test_version,diff_result, create_time, update_time)
-        values (#{basicVersion},#{testVersion},#{diffResult}, #{createTime}, #{updateTime})
+        insert into replay_diff (basic_version, test_version, diff_result, create_time, update_time)
+        values (#{basicVersion}, #{testVersion}, #{diffResult}, #{createTime}, #{updateTime})
     </insert>
+
+    <select id="getReplayList" parameterType="diffResultDto"  resultMap="replayDiffResult">
+    <include refid="selectReplayDiff"/>
+        <where>
+            <if test="testVersion != null and testVersion != ''">
+                AND test_version = #{testVersion}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
 </mapper>

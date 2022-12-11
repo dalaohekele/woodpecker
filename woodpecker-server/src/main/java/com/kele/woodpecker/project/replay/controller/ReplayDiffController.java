@@ -1,16 +1,17 @@
 package com.kele.woodpecker.project.replay.controller;
 
+import com.kele.woodpecker.framework.web.controller.BaseController;
 import com.kele.woodpecker.framework.web.domain.AjaxResult;
+import com.kele.woodpecker.framework.web.page.TableDataInfo;
+import com.kele.woodpecker.project.replay.domain.ReplayDiff;
+import com.kele.woodpecker.project.replay.domain.dto.DiffResultDto;
 import com.kele.woodpecker.project.replay.domain.dto.ReplayDiffDto;
-import com.kele.woodpecker.project.replay.domain.dto.ReplayDto;
 import com.kele.woodpecker.project.replay.service.IReplayDiffService;
-import com.kele.woodpecker.project.replay.service.IReplayFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author :kele
@@ -19,15 +20,23 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/replay")
-public class ReplayDiffController {
+public class ReplayDiffController extends BaseController {
 
     @Autowired
-    private IReplayDiffService jsonDiffService;
+    private IReplayDiffService replayDiffService;
+
+    @GetMapping("/diff/list")
+    public TableDataInfo list(DiffResultDto diffResultDto)
+    {
+        startPage();
+        List<ReplayDiff> diffList = replayDiffService.getDiffList(diffResultDto);
+        return getDataTable(diffList);
+    }
 
     @PostMapping("/diff")
-    public AjaxResult diff(@RequestBody ReplayDiffDto diffDto)
+    public AjaxResult diff(@Validated @RequestBody ReplayDiffDto diffDto)
     {
-        jsonDiffService.diffFlow(diffDto);
+        replayDiffService.diffFlow(diffDto);
         return AjaxResult.success("数据比对中，请稍等");
     }
 }

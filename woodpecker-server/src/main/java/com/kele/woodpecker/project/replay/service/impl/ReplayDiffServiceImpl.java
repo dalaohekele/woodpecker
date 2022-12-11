@@ -6,6 +6,7 @@ import com.ke.diff.Diff;
 import com.ke.diff.model.Result;
 import com.kele.woodpecker.project.replay.domain.ReplayDiff;
 import com.kele.woodpecker.project.replay.domain.ReplayFlow;
+import com.kele.woodpecker.project.replay.domain.dto.DiffResultDto;
 import com.kele.woodpecker.project.replay.domain.dto.ReplayDiffDto;
 import com.kele.woodpecker.project.replay.domain.dto.ReplayDto;
 import com.kele.woodpecker.project.replay.mapper.ReplayDiffMapper;
@@ -37,7 +38,7 @@ public class ReplayDiffServiceImpl implements IReplayDiffService {
     public void diffFlow(ReplayDiffDto diffDto) {
         // 基准流量数据
         ReplayDto basicReplayDto = new ReplayDto();
-        basicReplayDto.setNewVersion(diffDto.getNewVersion());
+        basicReplayDto.setNewVersion(diffDto.getTestVersion());
         List<ReplayFlow> basicFlowList = replayFlowService.getFlowList(basicReplayDto);
         ArrayList<String> basicList = new ArrayList<>();
         for (ReplayFlow basicReplayFlow : basicFlowList) {
@@ -46,7 +47,7 @@ public class ReplayDiffServiceImpl implements IReplayDiffService {
         }
         //测试版本流量
         ReplayDto testReplayDto = new ReplayDto();
-        testReplayDto.setNewVersion(diffDto.getOldVersion());
+        testReplayDto.setNewVersion(diffDto.getBasicVersion());
         List<ReplayFlow> testLowList = replayFlowService.getFlowList(testReplayDto);
         ArrayList<String> testList = new ArrayList<>();
         for (ReplayFlow oldReplayFlow : testLowList) {
@@ -63,8 +64,8 @@ public class ReplayDiffServiceImpl implements IReplayDiffService {
         List<Object> list = new ArrayList<>();
         Diff diff = new Diff();
         for (String id : inList) {
-            JSONObject basicReplayFlow = JSONObject.parseObject(JSON.toJSONString(replayFlowService.getFlowDes(id, diffDto.getNewVersion())));
-            JSONObject testReplayFlow = JSONObject.parseObject(JSON.toJSONString(replayFlowService.getFlowDes(id, diffDto.getOldVersion())));
+            JSONObject basicReplayFlow = JSONObject.parseObject(JSON.toJSONString(replayFlowService.getFlowDes(id, diffDto.getTestVersion())));
+            JSONObject testReplayFlow = JSONObject.parseObject(JSON.toJSONString(replayFlowService.getFlowDes(id, diffDto.getBasicVersion())));
             List<Result> results = null;
             // gor 录制流量 返回值可能为空，这里需要判空
             if (basicReplayFlow.get("respData") != null && testReplayFlow.get("respData") != null) {
@@ -83,12 +84,17 @@ public class ReplayDiffServiceImpl implements IReplayDiffService {
                 list.add(hashMap);
             }
         }
-        replayDiff.setTestVersion(diffDto.getNewVersion());
-        replayDiff.setBasicVersion(diffDto.getOldVersion());
+        replayDiff.setTestVersion(diffDto.getTestVersion());
+        replayDiff.setBasicVersion(diffDto.getBasicVersion());
         replayDiff.setDiffResult(JSON.toJSONString(list));
         replayDiff.setCreateTime(new Date());
         replayDiff.setUpdateTime(new Date());
         replayDiffMapper.insertReplayDiff(replayDiff);
+    }
+
+    @Override
+    public List<ReplayDiff> getDiffList(DiffResultDto diffResultDto) {
+        return replayDiffMapper.getReplayList(diffResultDto);
     }
 
     /**

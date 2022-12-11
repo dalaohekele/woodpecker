@@ -1,15 +1,10 @@
 <template>
   <div class="app-container">
-    <el-form
-      :model="queryParams"
-      ref="queryRef"
-      :inline="true"
-      v-show="showSearch"
-      label-width="100px"
+    <el-form :model="diffParams" :rules="rules" ref="queryRef" :inline="true"  v-show="showSearch" label-width="100px"
     >
       <el-form-item label="基准流量版本" prop="version">
         <el-select
-          v-model="queryParams.version"
+          v-model="diffParams.basicVersion"
           placeholder="请选择"
           clearable
         >
@@ -22,7 +17,7 @@
       </el-form-item>
       <el-form-item label="对比流量版本" prop="version">
         <el-select
-          v-model="queryParams.version"
+          v-model="diffParams.testVersion"
           placeholder="请选择"
           clearable
         >
@@ -33,11 +28,17 @@
           />
         </el-select>
       </el-form-item>
+      <!-- <el-form-item>
+        <el-input
+          v-model="diffParams.noiseList"
+          placeholder="降噪字段"
+          clearable
+        />
+      </el-form-item> -->
       <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery"
+        <el-button type="primary" icon="Search" @click="handleDiff"
           >对比</el-button
         >
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -46,42 +47,37 @@
       :data="replayList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" width="60" align="center" prop="id" />
+      <el-table-column width="50" align="center" type="index" />
       <el-table-column
-        label="gorId"
+      width="80"
+        label="基准版本"
         show-overflow-tooltip
         align="center"
-        prop="gorId"
+        prop="basicVersion"
       />
       <el-table-column
-        label="请求路径"
+      width="80"
+        label="测试版本"
         show-overflow-tooltip
         align="center"
-        prop="reqPath"
+        prop="testVersion"
       />
       <el-table-column
-        label="入参"
+        label="比对结果"
         show-overflow-tooltip
         align="center"
-        prop="reqParam"
+        prop="diffResult"
       />
       <el-table-column
-        label="出参"
+        label="创建时间"
         show-overflow-tooltip
-        width="240"
+        width="120"
         align="center"
-        prop="respData"
+        prop="createTime"
       ></el-table-column>
+
       <el-table-column
-        label="版本"
-        show-overflow-tooltip
-        width="60"
-        align="center"
-        prop="version"
-      >
-      </el-table-column>
-      <el-table-column
+      width="180"
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
@@ -90,17 +86,11 @@
           <el-button
             type="text"
             icon="Edit"
-            @click="handleUpdate(scope.row)"
+            @click="handleResult(scope.row)"
             v-hasPermi="['system:post:edit']"
-            >修改</el-button
+            >生成报告</el-button
           >
-          <el-button
-            type="text"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:post:remove']"
-            >删除</el-button
-          >
+
         </template>
       </el-table-column>
     </el-table>
@@ -110,73 +100,17 @@
       :total="total"
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
-      @pagination="getList"
+      @pagination="getDiffList"
     />
-    <el-dialog
-      :title="title"
-      v-model="versionDialog"
-      width="500px"
-      append-to-body
-    >
-      <el-form ref="versionRef" :model="versionForm" label-width="80px">
-        <el-form-item label="版本" prop="reqUrl">
-          <el-input v-model="versionForm.version" placeholder="请输入版本号" />
-        </el-form-item>
-        <el-form-item label="创建时间" style="width: 308px">
-          <el-date-picker
-            v-model="dateRange"
-            value-format="YYYY-MM-DD"
-            type="daterange"
-            range-separator="-"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          ></el-date-picker>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitVersionForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
-        </div>
-      </template>
-    </el-dialog>
-    <!-- 添加或修改流量数据 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="postRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="URL" prop="reqUrl">
-          <el-input v-model="form.reqUrl" placeholder="请输入请求URL" />
-        </el-form-item>
-        <el-form-item label="资源路径" prop="reqPath">
-          <el-input v-model="form.reqPath" placeholder="请输资源路径" />
-        </el-form-item>
-        <el-form-item label="请求类型" prop="reqMethod">
-          <el-select v-model="form.reqMethod" placeholder="请求类型" clearable>
-            <el-option
-              v-for="method in data.allMethod"
-              :key="method"
-              :value="method"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="请求头" prop="reqCookies">
-          <el-input v-model="form.reqCookies" placeholder="请输入请求头" />
-        </el-form-item>
-        <el-form-item label="请求参数" prop="reqParam">
-          <el-input v-model="form.reqParam" placeholder="请输入请求参数" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
-        </div>
-      </template>
-    </el-dialog>
+
+
   </div>
 </template>
 
 <script setup name="Post">
-import {listReplay,listVersion,getReplay,delReplay,addVersion} from "@/api/replay/replay";
+import {listVersion} from "@/api/replay/replay";
+import {diffList,replayDiff} from "@/api/replay/diff";
+
 const { proxy } = getCurrentInstance();
 
 const replayList = ref([]);
@@ -199,21 +133,21 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    gorId: undefined,
-    version: undefined,
+    testVersion: undefined,
+  },
+  diffParams: {
+    basicVersion: undefined,
+    testVersion: undefined,
+    noiseList:undefined
   },
   rules: {
-    reqMethod: [
-      { required: true, message: "请求参数不能为空", trigger: "blur" },
-    ],
-    reqUrl: [{ required: true, message: "请求url不能为空", trigger: "blur" }],
-    reqPath: [
-      { required: true, message: "请求资源路径不能为空", trigger: "blur" },
-    ],
+    basicVersion: [{ required: true, message: "基准版本不能为空", trigger: "blur" }],
+    testVersion: [{ required: true, message: "对比版本不能为空", trigger: "blur" }],
   },
 });
 
-const { queryParams, form, versionForm, rules } = toRefs(data);
+const { diffParams, queryParams,form, versionForm, rules } = toRefs(data);
+
 /** 获取版本列表 */
 function getVersionList() {
   loading.value = true;
@@ -223,10 +157,10 @@ function getVersionList() {
   });
 }
 
-/** 查询列表 */
-function getList() {
+/** 查询diff列表 */
+function getDiffList() {
   loading.value = true;
-  listReplay(queryParams.value).then((response) => {
+  diffList(queryParams.value).then((response) => {
     replayList.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -248,16 +182,14 @@ function reset() {
   };
   proxy.resetForm("postRef");
 }
-/** 搜索按钮操作 */
-function handleQuery() {
-  queryParams.value.pageNum = 1;
-  getList();
+/** 对比按钮操作 */
+function handleDiff() {
+  replayDiff(diffParams.value).then((response) => {
+    proxy.$modal.msgSuccess(response.msg);
+  });
+  getDiffList();
 }
-/** 重置按钮操作 */
-function resetQuery() {
-  proxy.resetForm("queryRef");
-  handleQuery();
-}
+
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
   ids.value = selection.map((item) => item.id);
@@ -271,20 +203,9 @@ function handleAdd() {
   title.value = "添加请求数据";
 }
 
-/** 流量添加标签 */
-function handleAddVersion() {
-  versionDialog.value = true;
-  title.value = "流量添加标签";
-}
-/** 修改按钮操作 */
-function handleUpdate(row) {
-  reset();
-  const id = row.id || ids.value;
-  getReplay(id).then((response) => {
-    form.value = response.data;
-    open.value = true;
-    title.value = "修改流量";
-  });
+/** 生成报告 */
+function handleResult(row) {
+  alert("功能尚未完成！！")
 }
 
 function submitVersionForm(){
@@ -293,42 +214,6 @@ function submitVersionForm(){
     versionDialog.value  = false;
   });
 }
-/** 提交按钮 */
-// function submitForm() {
-//   proxy.$refs["postRef"].validate((valid) => {
-//     if (valid) {
-//       if (form.value.id != undefined) {
-//         updatePost(form.value).then((response) => {
-//           proxy.$modal.msgSuccess("修改成功");
-//           open.value = false;
-//           getList();
-//         });
-//       } else {
-//         addPost(form.value).then((response) => {
-//           proxy.$modal.msgSuccess("新增成功");
-//           open.value = false;
-//           getList();
-//         });
-//       }
-//     }
-//   });
-// }
-/** 删除按钮操作 */
-function handleDelete(row) {
-  const replayIds = row.id || ids.value;
-  proxy.$modal
-    .confirm('是否确认删除流量编号为"' + replayIds + '"的数据项？')
-    .then(function () {
-      return delReplay(replayIds);
-    })
-    .then(() => {
-      getList();
-      proxy.$modal.msgSuccess("删除成功");
-    })
-    .catch(() => {});
-}
-
-
-getList();
 getVersionList();
+getDiffList();
 </script>
