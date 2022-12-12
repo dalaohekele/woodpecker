@@ -28,13 +28,13 @@
           />
         </el-select>
       </el-form-item>
-      <!-- <el-form-item>
+      <el-form-item label="降噪字段">
         <el-input
           v-model="diffParams.noiseList"
-          placeholder="降噪字段"
+          placeholder="使用英文,做分隔符"
           clearable
         />
-      </el-form-item> -->
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleDiff"
           >对比</el-button
@@ -107,7 +107,7 @@
   </div>
 </template>
 
-<script setup name="Post">
+<script setup name="Diff">
 import {listVersion} from "@/api/replay/replay";
 import {diffList,replayDiff} from "@/api/replay/diff";
 
@@ -124,6 +124,7 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
+const noiseKey=ref("")
 
 const data = reactive({
   form: {},
@@ -184,6 +185,8 @@ function reset() {
 }
 /** 对比按钮操作 */
 function handleDiff() {
+  data.noiseKey = diffParams.value.noiseList
+  diffParams.value.noiseList = data.noiseKey.split(',')
   replayDiff(diffParams.value).then((response) => {
     proxy.$modal.msgSuccess(response.msg);
   });
