@@ -62,6 +62,8 @@ public class AutoCaseUtil {
     }
 
 
+
+
     public static void main(String[] args) throws IOException {
         // java 传jsonString 时,数据格式会发生变化，这里可以通过元组传递给python
         String caseIn = "[('男',['1', '3','2']),('女',['2',3])]";
