@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kele.woodpecker.project.auto.mapper.AutoCaseBaseInfoMapper">
+    <resultMap type="autoCaseBaseInfo" id="autoCaseBaseInfoResult">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="reqUrl" column="req_url"/>
+        <result property="reqPath" column="req_path"/>
+        <result property="reqMethod" column="req_method"/>
+        <result property="reqCookies" column="req_cookies"/>
+        <result property="reqContentType" column="req_content_type"/>
+        <result property="caseParam" column="case_param"/>
+        <result property="caseAssertion" column="case_assertion"/>
+        <result property="createBy"     column="create_by"    />
+        <result property="createTime"   column="create_time"  />
+        <result property="updateBy"     column="update_by"    />
+        <result property="updateTime"   column="update_time"  />
+    </resultMap>
+
+    <insert id="insertAutoCaseBaseInfo" parameterType="AutoCaseBaseInfo">
+        insert into auto_case_base_info (name,req_url, req_path, req_method, req_cookies, req_content_type, case_param, case_assertion,
+        create_by, create_time,update_by,update_time)
+        values (#{name},#{reqUrl}, #{reqPath}, #{reqMethod}, #{reqCookies}, #{reqContentType}, #{caseParam}, #{caseAssertion},
+        #{createBy}, #{createTime},#{updateBy},#{updateTime})
+    </insert>
+
+    <sql id="selectAutoCaseBaseInfo">
+        select id,
+        name,
+        req_url,
+        req_path,
+        req_method,
+        req_cookies,
+        case_param,
+        case_assertion,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        from auto_case_base_info
+    </sql>
+
+    <select id="selectAutoCaseBaseInfoByName" resultMap="autoCaseBaseInfoResult">
+        <include refid="selectAutoCaseBaseInfo"/>
+        where name=#{name}
+    </select>
+
+    <select id="selectAutoCaseBaseInfoById" resultMap="autoCaseBaseInfoResult">
+        <include refid="selectAutoCaseBaseInfo"/>
+        where id=#{id}
+    </select>
+
+    <select id="selectAutoCaseBaseInfoList" resultMap="autoCaseBaseInfoResult">
+        <include refid="selectAutoCaseBaseInfo"/>
+        order by create_time desc limit 100
+    </select>
+
+
+
+</mapper>

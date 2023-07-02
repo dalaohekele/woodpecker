@@ -1,4 +1,4 @@
-package com.kele.woodpecker.project.replay.utils;
+package com.kele.woodpecker.project.auto.utils;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
@@ -9,6 +9,9 @@ import java.util.Map;
 
 import static com.kele.woodpecker.common.utils.DateUtils.getDate;
 
+/**
+ * 接口单字段无效等价类用例生成
+ */
 public class RecursiveCaseUtil {
     /**
      * 通过字段类型自动生成无效等价类用例

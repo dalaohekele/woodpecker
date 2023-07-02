@@ -1,7 +1,6 @@
-package com.kele.woodpecker.project.replay.utils;
+package com.kele.woodpecker.project.auto.utils;
 
 import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
