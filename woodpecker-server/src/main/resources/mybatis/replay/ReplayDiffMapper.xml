@@ -13,7 +13,7 @@
     </resultMap>
 
     <sql id="selectReplayDiff">
-        select basic_version, test_version, diff_result, create_time, update_time
+        select id,basic_version, test_version, diff_result, create_time, update_time
         from replay_diff
     </sql>
     <insert id="insertReplayDiff" parameterType="replayDiff">

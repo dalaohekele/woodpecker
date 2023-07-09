@@ -6,28 +6,25 @@ import com.kele.woodpecker.framework.web.domain.AjaxResult;
 import com.kele.woodpecker.framework.web.page.TableDataInfo;
 import com.kele.woodpecker.project.auto.domain.AutoCaseBaseInfo;
 import com.kele.woodpecker.project.auto.service.IAutoCaseBaseInfoService;
-import com.kele.woodpecker.project.replay.domain.ReplayFlow;
-import com.kele.woodpecker.project.replay.domain.dto.ReplayDto;
-import com.kele.woodpecker.project.replay.domain.dto.ReplayQueryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/autoCaseBaseInfo")
+@RequestMapping("/autoCase")
 public class AutoCaseBaseInfoController extends BaseController {
 
     @Autowired
     IAutoCaseBaseInfoService caseBaseInfoService;
 
-    @PostMapping("/add")
+    @PostMapping("/baseCase/add")
     public AjaxResult addCaseBaseInfo(@RequestBody AutoCaseBaseInfo caseBaseInfo)
     {
         return toAjax(caseBaseInfoService.saveCaseBaseInfo(caseBaseInfo));
     }
 
-    @GetMapping("/list")
+    @GetMapping("/baseCase/list")
     public TableDataInfo list()
     {
         startPage();

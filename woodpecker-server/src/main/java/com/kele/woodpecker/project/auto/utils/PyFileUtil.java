@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ClassUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 public class PyFileUtil {
@@ -59,16 +61,4 @@ public class PyFileUtil {
         }
         return resultList;
     }
-
-
-
-
-//    public static void main(String[] args) throws IOException {
-//        // java 传jsonString 时,数据格式会发生变化，这里可以通过元组传递给python
-////        String caseIn = "[('男',['1', '3','2']),('女',['2',3])]";
-//        String caseIn = "{\"$.data.name\":\"String\",\"$.data.age\":\"Int\",\"$.data.student\":\"Time\"}";
-//
-//        JSONArray res = execPythonFile("OAT.py",caseIn);
-//        logger.info(res.toString());
-//    }
 }

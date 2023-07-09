@@ -1,9 +1,9 @@
-# encoding: utf-8
+# encoding:utf-8
 import json
 import sys
 from itertools import groupby
 from collections import OrderedDict
-
+from redis import Redis
 
 def dataSplit(data):
     ds = []
@@ -76,8 +76,8 @@ class OAT(object):
         query_key = ''
         for i in sort_mk:
             for j in i:
-                str_j= "{}".format(j)
-                query_key = ' ^'+str_j
+                str_j = "{}".format(j)
+                query_key = ' ^' + str_j
         for data in self.data:
             # 先查询是否有完全匹配的正交表数据
             if query_key in data[0]:
@@ -124,9 +124,27 @@ if __name__ == "__main__":
     OAFile = sys.argv[1]
     oat = OAT(OAFile)
     str = sys.argv[2]
-    # java 传jsonString 时,数据格式会发生变化，这里可以通过元组传递给python
-    dict_case = dict(eval(str))
-    print(json.dumps(oat.genSets(dict_case,mode=1, num=0), ensure_ascii=False))
-
-
-
+    try:
+        # key = sys.argv[1]
+        key = "base_id_"+str
+        host = '127.0.0.1'
+        port = '6379'
+        redis_conn = Redis(host, port)
+        field = redis_conn.get(key)
+        params = json.loads(field)
+        result = []
+        print(json.dumps(oat.genSets(json.loads(params)), ensure_ascii=False))
+        redis_conn.delete(key)
+        # redis_conn.set(key, json.dumps(oat.genSets(json.loads(params)), ensure_ascii=False))
+        redis_conn.close()
+    except Exception as e:
+        print(e)
+# java 传jsonString 时,数据格式会发生变化，可以通过元组传递给python
+# 这里为了方便转换,通过strign传递过来，使用python将格式转换为dict
+# print(str)
+# info = str.replace("{", "").replace("}", "")
+# list_input = info.split(",")
+# res = {}
+# for case_json in list_input:
+#     res[case_json.split(":")[0]]=case_json.split(":")[1]
+# print(json.dumps(oat.genSets(res,mode=1, num=0), ensure_ascii=False))

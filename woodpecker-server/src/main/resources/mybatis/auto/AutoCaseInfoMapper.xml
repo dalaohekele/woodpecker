@@ -6,21 +6,20 @@
     <resultMap type="autoCaseInfo" id="autoCaseInfoResult">
         <id property="id" column="id"/>
         <result property="caseBaseId" column="case_base_id"/>
+        <result property="mockName" column="mock_name"/>
         <result property="reqParam" column="req_param"/>
         <result property="respData" column="resp_data"/>
         <result property="caseAssertion" column="case_assertion"/>
         <result property="caseRealAssertion" column="case_real_assertion"/>
         <result property="caseStatus" column="case_status"/>
-        <result property="createBy"     column="create_by"    />
         <result property="createTime"   column="create_time"  />
-        <result property="updateBy"     column="update_by"    />
         <result property="updateTime"   column="update_time"  />
     </resultMap>
     <insert id="insertAutoCaseInfo" parameterType="autoCaseInfo">
-        insert into auto_case_info (case_base_id, req_param, resp_data, case_assertion, case_real_assertion, case_status,
-        create_by, create_time,update_by,update_time)
-        values (#{caseBaseId}, #{reqParam}, #{respData}, #{caseAssertion}, #{caseRealAssertion}, #{caseStatus},
-        #{createBy}, #{createTime},#{updateBy},#{updateTime})
+        insert into auto_case_info (case_base_id, mock_name,req_param, resp_data, case_assertion, case_real_assertion, case_status,
+        create_time,update_time)
+        values (#{caseBaseId},#{mockName}, #{reqParam}, #{respData}, #{caseAssertion}, #{caseRealAssertion}, #{caseStatus},
+        #{createTime},#{updateTime})
     </insert>
 
     <sql id="selectAutoCaseInfo">
@@ -30,16 +29,14 @@
         case_assertion,
         case_real_assertion,
         case_status,
-        create_by,
         create_time,
-        update_by,
         update_time
         from auto_case_info
     </sql>
 
     <select id="selectAutoCaseInfoByBaseId" resultMap="autoCaseInfoResult">
         <include refid="selectAutoCaseInfo"/>
-        where case_base_id=#{caseBaseId}
+        where case_base_id=#{caseBaseId} limit 1
     </select>
 
     <select id="selectAutoCaseInfoById" resultMap="autoCaseInfoResult">

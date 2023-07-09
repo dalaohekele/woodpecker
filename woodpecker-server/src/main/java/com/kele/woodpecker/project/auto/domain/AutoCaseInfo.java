@@ -20,6 +20,8 @@ public class AutoCaseInfo extends BaseEntity {
 
     private Long caseBaseId;
 
+    private String mockName;
+
     private String reqParam;
 
     private String respData;

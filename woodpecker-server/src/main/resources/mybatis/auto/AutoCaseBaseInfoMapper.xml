@@ -6,38 +6,29 @@
     <resultMap type="autoCaseBaseInfo" id="autoCaseBaseInfoResult">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
-        <result property="reqUrl" column="req_url"/>
-        <result property="reqPath" column="req_path"/>
-        <result property="reqMethod" column="req_method"/>
-        <result property="reqCookies" column="req_cookies"/>
-        <result property="reqContentType" column="req_content_type"/>
+        <result property="mockName" column="mock_name"/>
+        <result property="env" column="env"/>
         <result property="caseParam" column="case_param"/>
         <result property="caseAssertion" column="case_assertion"/>
-        <result property="createBy"     column="create_by"    />
         <result property="createTime"   column="create_time"  />
-        <result property="updateBy"     column="update_by"    />
         <result property="updateTime"   column="update_time"  />
     </resultMap>
 
     <insert id="insertAutoCaseBaseInfo" parameterType="AutoCaseBaseInfo">
-        insert into auto_case_base_info (name,req_url, req_path, req_method, req_cookies, req_content_type, case_param, case_assertion,
-        create_by, create_time,update_by,update_time)
-        values (#{name},#{reqUrl}, #{reqPath}, #{reqMethod}, #{reqCookies}, #{reqContentType}, #{caseParam}, #{caseAssertion},
-        #{createBy}, #{createTime},#{updateBy},#{updateTime})
+        insert into auto_case_base_info (name,mock_name, env, case_param,case_assertion,
+        create_time,update_time)
+        values (#{name},#{mockName}, #{env}, #{caseParam}, #{caseAssertion},
+        #{createTime},#{updateTime})
     </insert>
 
     <sql id="selectAutoCaseBaseInfo">
         select id,
         name,
-        req_url,
-        req_path,
-        req_method,
-        req_cookies,
+        mock_name,
+        env,
         case_param,
         case_assertion,
-        create_by,
         create_time,
-        update_by,
         update_time
         from auto_case_base_info
     </sql>
@@ -54,7 +45,7 @@
 
     <select id="selectAutoCaseBaseInfoList" resultMap="autoCaseBaseInfoResult">
         <include refid="selectAutoCaseBaseInfo"/>
-        order by create_time desc limit 100
+        order by create_time desc
     </select>
 
 

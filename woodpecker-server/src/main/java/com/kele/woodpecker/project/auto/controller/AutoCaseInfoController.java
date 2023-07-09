@@ -3,9 +3,7 @@ package com.kele.woodpecker.project.auto.controller;
 import com.alibaba.fastjson2.JSONObject;
 import com.kele.woodpecker.framework.aspectj.lang.annotation.Log;
 import com.kele.woodpecker.framework.web.domain.AjaxResult;
-import com.kele.woodpecker.project.auto.domain.AutoCaseBaseInfo;
-import com.kele.woodpecker.project.auto.domain.AutoCaseInfo;
-import com.kele.woodpecker.project.auto.service.IAutoCaseBaseInfoService;
+
 import com.kele.woodpecker.project.auto.service.IAutoCaseInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,17 +11,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
-@RequestMapping("/autoCaseInfo")
+@RequestMapping("/autoCase")
 public class AutoCaseInfoController {
 
 
     @Autowired
     IAutoCaseInfoService caseInfoService;
 
-    @PostMapping("/add")
-    public AjaxResult autoAddCaseInfo(@RequestBody JSONObject object)
-    {
+    @PostMapping("/caseInfo/autoAdd")
+    public AjaxResult autoAddCaseInfo(@RequestBody JSONObject object) throws IOException {
 
         long baseCaseId = object.getLong("baseCaseId");
         if (caseInfoService.autoBaseCaseExit(baseCaseId)){
