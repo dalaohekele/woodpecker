@@ -1,6 +1,6 @@
 package com.kele.woodpecker.project.auto.utils;
 
-import com.alibaba.fastjson2.JSONArray;
+
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,10 +9,10 @@ import org.springframework.util.ClassUtils;
 import java.io.*;
 import java.util.List;
 
-public class AutoCaseUtil {
-    private static final Logger logger = LoggerFactory.getLogger(AutoCaseUtil.class);
+public class PyFileUtil {
+    private static final Logger logger = LoggerFactory.getLogger(PyFileUtil.class);
 
-    public static JSONArray execPythonFile(String fileName, String params) throws IOException {
+    public static String execPythonFile(String fileName, String params) throws IOException {
         // ① 当前系统类型
         String os = System.getProperty("os.name");
         // ② 获取python文件所在目录地址
@@ -43,7 +43,7 @@ public class AutoCaseUtil {
         } catch (InterruptedException e) {
             logger.error("读取python文件 fileName=" + fileName + " 等待结果返回异常", e);
         }
-        return JSONArray.parseArray(returnString.get(0));
+        return returnString.get(0);
     }
 
     private static List<String> read(String fileName, BufferedReader reader) {
@@ -63,10 +63,12 @@ public class AutoCaseUtil {
 
 
 
-    public static void main(String[] args) throws IOException {
-        // java 传jsonString 时,数据格式会发生变化，这里可以通过元组传递给python
-        String caseIn = "[('男',['1', '3','2']),('女',['2',3])]";
-        JSONArray res = execPythonFile("OAT.py",caseIn);
-        logger.info(res.toString());
-    }
+//    public static void main(String[] args) throws IOException {
+//        // java 传jsonString 时,数据格式会发生变化，这里可以通过元组传递给python
+////        String caseIn = "[('男',['1', '3','2']),('女',['2',3])]";
+//        String caseIn = "{\"$.data.name\":\"String\",\"$.data.age\":\"Int\",\"$.data.student\":\"Time\"}";
+//
+//        JSONArray res = execPythonFile("OAT.py",caseIn);
+//        logger.info(res.toString());
+//    }
 }
