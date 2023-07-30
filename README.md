@@ -6,9 +6,6 @@
 
 如果你想从录制开始体验，需要搭建[演示系统newbee-mall-api-go](https://github.com/newbee-ltd/newbee-mall-api-go)
 ，同时需要将[gor](https://github.com/buger/goreplay) 部署在演示系统服务中，搭建kafka以便收集流量（你需要在项目中将KafkaConsumer 这个类的自动注入注释解除）
-相关文档准备中....
-
-如果你想直接体验平台流程，直接部署本 前后端分离项目即可，相关文档准备中....
 
 
 
@@ -46,7 +43,6 @@
 - [ ] jvm-sandbox-repeater 接入
 - [ ] mock服务
 
-Q群号 1154555924
 
 
 
